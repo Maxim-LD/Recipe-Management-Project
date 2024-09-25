@@ -6,6 +6,7 @@ const dotenv = require('dotenv').config()
 const routes = require("./routes/userRoute")
 
 
+
 const app = express() 
 
 app.use(express.json())
@@ -16,7 +17,7 @@ const PORT = process.env.PORT || 8000
 connectToDB()
 
 app.use("/api", routes)
-// app.use("/register-user", validateRegistration, registerUser)
+
 
 app.listen(PORT, ()=>{
     console.log(`Connected via port ${PORT}`)

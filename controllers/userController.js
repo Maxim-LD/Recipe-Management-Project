@@ -1,6 +1,7 @@
 const Users = require("../models/userSchema")
 const bcrypt = require("bcrypt")
-const sendMail = require('../utilities/sendMail')
+const jwt = require("jsonwebtoken")
+const { regEmail, logEmail } = require("../utilities/emailService")
 
 
 
@@ -11,7 +12,6 @@ const registerUser = async (req, res)=>{
 
         const { firstName, lastName, userName, email, password, bio, favoriteCuisine } = req.body
 
-        const pass = password
         const userExist = await Users.findOne({email})
 
         if(userExist){
@@ -35,8 +35,7 @@ const registerUser = async (req, res)=>{
 
         await newUser.save()
 
-        await sendMail(email)
-
+        await regEmail(email)
 
         return res.status(200).json({
             message: "User account created successfully!",
@@ -50,6 +49,93 @@ const registerUser = async (req, res)=>{
     }
 }
 
+const login = async (req, res)=>{
+
+    try {
+
+        const { email, password } = req.body
+
+        const userExist = await Users.findOne({email})
+
+        if(!userExist){
+
+            return res.status(404).json({
+                message: "User not found!"
+            })
+        }
+
+        const passwordCheck = await bcrypt.compare(password, userExist.password)
+
+        if(!passwordCheck){
+            
+            return res.status(400).json({
+                message: "Incorrect password or email!"
+            })
+        }
+        
+        //access token
+        const accessToken = jwt.sign(
+            
+            {userExist},
+            `${process.env.ACCESS_TOKEN}`,
+            {expiresIn: "15m"}
+        )
+
+        await logEmail(email)
+
+        return res.status(200).json({
+            message: "Login successful!",
+            accessToken,
+            userExist
+        })
+   
+    } catch (error) {
+        
+    }
+}
+
+const authLogin = async (req, res)=>{
+
+    return res.status(200).json({
+        message: "Successful!",
+        user: req.checkDB
+    })
+}
+
+const users = async (req, res)=>{
+
+    const users = await Users.find()
+
+    return res.status(200).json({
+
+        count: users.length,
+        message: "Successul!", users
+    })
+}
+
+const deleteUser = async (req, res)=>{
+
+   try {
+    
+        const { id } = req.params
+
+        const deleted = await Users.findByIdAndDelete(id)
+        
+        return res.status(200).json({
+            message: "user deleted successfully!"
+        })
+    } catch (error) {
+
+        return res.status(500).json({message: error.message})
+     } 
+
+}
+
+
 module.exports = {
-    registerUser
+    registerUser,
+    login,
+    authLogin,
+    users,
+    deleteUser
 }
