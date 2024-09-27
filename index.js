@@ -3,7 +3,8 @@ const express = require('express')
 const mongoose = require('mongoose')
 const connectToDB = require('./db')
 const dotenv = require('dotenv').config()
-const routes = require("./routes/userRoute")
+const userRoutes = require("./routes/userRoute")
+const recipeRoutes = require("./routes/recipeRoute")
 
 
 
@@ -16,7 +17,8 @@ const PORT = process.env.PORT || 8000
 
 connectToDB()
 
-app.use("/api", routes)
+app.use("/api", userRoutes)
+app.use("/api", recipeRoutes)
 
 
 app.listen(PORT, ()=>{

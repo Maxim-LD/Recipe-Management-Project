@@ -6,6 +6,7 @@ const { regEmail, logEmail } = require("../utilities/emailService")
 
 
 
+
 const registerUser = async (req, res)=>{
 
     try {
@@ -73,12 +74,11 @@ const login = async (req, res)=>{
             })
         }
         
-        //access token
         const accessToken = jwt.sign(
             
             {userExist},
             `${process.env.ACCESS_TOKEN}`,
-            {expiresIn: "15m"}
+            {expiresIn: "30m"}
         )
 
         await logEmail(email)
@@ -113,13 +113,13 @@ const users = async (req, res)=>{
     })
 }
 
-const deleteUser = async (req, res)=>{
+/* const deleteUser = async (req, res)=>{
 
    try {
     
         const { id } = req.params
 
-        const deleted = await Users.findByIdAndDelete(id)
+        await Users.findByIdAndDelete(id)
         
         return res.status(200).json({
             message: "user deleted successfully!"
@@ -129,7 +129,7 @@ const deleteUser = async (req, res)=>{
         return res.status(500).json({message: error.message})
      } 
 
-}
+} */
 
 
 module.exports = {
@@ -137,5 +137,5 @@ module.exports = {
     login,
     authLogin,
     users,
-    deleteUser
+    // deleteUser
 }
