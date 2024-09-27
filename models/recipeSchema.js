@@ -12,7 +12,8 @@ const recipeSchema = new mongoose.Schema({
     title: {type: String, require: true},
     ingredients: {type: [String], require: true},
     instructions: {type: [String], require: true},
-    category: {type: String, require: true}
+    category: {type: String, require: true},
+    userPreferences: { type: [String] }
    
     
 },{

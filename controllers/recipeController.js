@@ -10,7 +10,7 @@ const addRecipe = async (req, res)=>{
 
         const authorName =  req.user.firstName + ' ' + req.user.lastName
 
-        const { title, ingredients, instructions, category } = req.body
+        const { title, ingredients, instructions, category, userPreferences } = req.body
 
         if (!title || !ingredients || !instructions || !category) {
 
@@ -26,7 +26,8 @@ const addRecipe = async (req, res)=>{
             title,
             ingredients,
             instructions,
-            category
+            category,
+            userPreferences
 
         })
 
@@ -117,66 +118,52 @@ const deleteRecipe = async (req, res)=>{
     }
 }
 
-const searchByCategory = async (req, res)=>{
+
+const searchRecipes = async (req, res)=>{
 
     try {
-        
-        const { category } = req.query
 
-        if(!category){
-            return res.status(400).json({
-                message: "Category is required!"
-            })
+        const { category, ingredients, userPreferences} = req.query
+
+        const search = {}
+
+        if(category){
+
+            search.category = category
+        }
+        
+        if(ingredients){
+
+            const ingredientsList = ingredients.split(",")
+
+            search.ingredients = { $all: ingredientsList } 
+    
         }
 
-        const recipes = await Recipes.find({ category })
+        if(userPreferences){
+
+            const preferencesList = userPreferences.split(",")
+
+            search.userPreferences = { $in: preferencesList }
+        }
+
+        const recipes = await Recipes.find(search)
+
 
         if(recipes.length === 0){
             return res.status(404).json({
-                message: "No recipe in this category!"
+                message: "No recipe found!"
             })
         }
 
-        return res.status(200).json({
-           recipes
-        })
+        return res.status(200).json({ 
+            count: recipes.length,
+            recipes 
 
+        })
 
     } catch (error) {
         return res.status(500).json({message: error.message})
-    }
-}
-
-const searchByIngredients = async (req, res)=>{
-
-    try {
-        
-        const { ingredients } = req.query
-
-        if(!ingredients){
-
-            return res.status(400).json({
-                message: "Ingredients are required"
-            })
-        }
-
-        const listIngredients = ingredients.split(",")
-
-        const recipes = await Recipes.find( {ingredients: { $all: listIngredients } })
-
-        if(recipes.length === 0 ){
-            return res.status(404).json({
-                message: "No recipe with these ingredients!"
-            })
-        }
-
-            return res.status(200).json({
-                count: recipes.length,
-                recipes
-            })
-
-    } catch (error) {
-        return res.status(500).json({message: error.message}) 
     }
 }
 
@@ -190,6 +177,5 @@ module.exports = {
         deleteRecipe,
         recipes,
         updateRecipe,
-        searchByCategory,
-        searchByIngredients
-    }
+        searchRecipes
+}
