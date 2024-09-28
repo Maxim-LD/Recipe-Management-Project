@@ -1,8 +1,6 @@
 const express = require("express")
 const recipeController = require("../controllers/recipeController")
-const {  validateToken } = require("../middlewares/validations")
-const { pagination } = require("../utilities/pagination")
-
+const  validateToken = require("../middlewares/validateAuth")
 
 const router = express.Router()
 

@@ -20,6 +20,14 @@ const addRecipe = async (req, res)=>{
             });
         }
 
+        const existingRecipe = await Recipes.findOne({ title })
+        
+        if (existingRecipe) {
+            return res.status(400).json({
+                message: "You have already added this recipe."
+            })
+        }
+
         const newRecipe = new Recipes({
 
             authorId,
