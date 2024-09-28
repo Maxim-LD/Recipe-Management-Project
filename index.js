@@ -29,7 +29,7 @@ app.listen(PORT, ()=>{
 
 app.get("/", (req, res)=>{
 
-    return res.status(200).json({message: "Welcome to Recipe Management Backend!"})
+    return res.status(200).json({message: "Welcome to Recipe Management Services!"})
 })
 
 
