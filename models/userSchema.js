@@ -7,8 +7,8 @@ const userSchema = new mongoose.Schema({
     email: {type: String, require: true},
     password: {type: String, require: true},
     bio: {type: String},
-    favoriteCuisine: {type: String}//empty array to be saved here
-    
+    favoriteCuisine: {type: [String], default: []},//empty array to be saved here
+   
 }, {
     timestamps: true
 })

@@ -78,7 +78,7 @@ const login = async (req, res)=>{
             
             {userExist},
             `${process.env.ACCESS_TOKEN}`,
-            {expiresIn: "30m"}
+            {expiresIn: "5d"}
         )
 
         await logEmail(email)

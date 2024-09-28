@@ -5,6 +5,7 @@ const connectToDB = require('./db')
 const dotenv = require('dotenv').config()
 const userRoutes = require("./routes/userRoute")
 const recipeRoutes = require("./routes/recipeRoute")
+const ratingRoutes = require("./routes/ratingRoute")
 
 
 
@@ -19,6 +20,7 @@ connectToDB()
 
 app.use("/api", userRoutes)
 app.use("/api", recipeRoutes)
+app.use("/api", ratingRoutes)
 
 
 app.listen(PORT, ()=>{

@@ -1,4 +1,5 @@
 const Recipes = require("../models/recipeSchema")
+const { pagination } = require("../utilities/pagination")
 
 
 
@@ -123,7 +124,10 @@ const searchRecipes = async (req, res)=>{
 
     try {
 
-        const { category, ingredients, userPreferences} = req.query
+        //destructure the search parameters into the request query
+        const { category, ingredients, userPreferences } = req.query
+
+        const { page, limit, skip } = pagination(req)
 
         const search = {}
 
@@ -148,7 +152,11 @@ const searchRecipes = async (req, res)=>{
         }
 
         const recipes = await Recipes.find(search)
-
+            .skip(skip)
+            .limit(limit)
+            .sort({ createdAt: - 1 })
+           
+        const totalRecipes = await Recipes.countDocuments(search)
 
         if(recipes.length === 0){
             return res.status(404).json({
@@ -157,7 +165,9 @@ const searchRecipes = async (req, res)=>{
         }
 
         return res.status(200).json({ 
-            count: recipes.length,
+            currentPage: page,
+            totalRecipes,
+            totalPages: Math.ceil(totalRecipes / limit),
             recipes 
 
         })
